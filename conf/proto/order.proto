@@ -1,0 +1,188 @@
+syntax = "proto3";
+
+option go_package = "github.com/achwanyusuf/carrent-ordersvc/src/model/grpcmodel";
+option java_multiple_files = true;
+option java_package = "io.grpc.ordersvc.order";
+option java_outer_classname = "OrderProto";
+
+package order;
+
+service Order {
+    rpc CreateOrder (CreateOrderRequest) returns (SingleOrderReply) {}
+    rpc UpdateOrder (UpdateOrderRequest) returns (SingleOrderReply) {}
+    rpc DeleteOrder (DeleteOrderRequest) returns (DeleteOrderReply) {}
+    rpc GetOrderByID (GetOrderByIDRequest) returns (SingleOrderReply) {}
+    rpc GetOrderByParam (GetOrderByParamRequest) returns (GetOrderByParamReply) {}
+
+    rpc CreateCar (CreateCarRequest) returns (SingleCarReply) {}
+	rpc UpdateCar (UpdateCarRequest) returns (SingleCarReply) {}
+	rpc DeleteCar (DeleteCarRequest) returns (DeleteCarReply) {}
+	rpc GetCarByID (GetCarByIDRequest) returns (SingleCarReply) {}
+	rpc GetCarByParam (GetCarByParamRequest) returns (GetCarByParamReply) {}
+}
+
+message CreateOrderRequest{
+    int64 car_id = 1;
+    string order_date = 2;
+    string pickup_date = 3;
+    string dropoff_date = 4;
+    string pickup_location = 5;
+    double pickup_lat = 6;
+    double pickup_long = 7;
+    string dropoff_location = 8;
+    double dropoff_lat = 9;
+    double dropoff_long = 10;
+    int64 created_by = 11;
+}
+
+message SingleOrderReply{
+    int64 id = 1;
+    int64 car_id = 2;
+    string order_date = 3;
+    string pickup_date = 4;
+    string dropoff_date = 5;
+    string pickup_location = 6;
+    double pickup_lat = 7;
+    double pickup_long = 8;
+    string dropoff_location = 9;
+    double dropoff_lat = 10;
+    double dropoff_long = 11;
+    int64 created_by = 12;
+    string created_at = 13;
+    int64 updated_by = 14;
+    string updated_at = 15;
+    optional int64 deleted_by = 16;
+    optional string deleted_at = 17;
+}
+
+message UpdateOrderRequest{
+    optional int64 car_id = 1;
+    optional string order_date = 2;
+    optional string pickup_date = 3;
+    optional string dropoff_date = 4;
+    optional string pickup_location = 5;
+    optional double pickup_lat = 6;
+    optional double pickup_long = 7;
+    optional string dropoff_location = 8;
+    optional double dropoff_lat = 9;
+    optional double dropoff_long = 10;
+    int64 updated_by = 11;
+    int64 id = 12;
+}
+
+message DeleteOrderRequest{
+  	int64 id = 1;
+    int64 deleted_by = 2;
+}
+
+message DeleteOrderReply{
+  	int64 id = 1;
+}
+
+message GetOrderByIDRequest{
+  	int64 id = 1;
+     string cache_control = 2;
+}
+
+message GetOrderByParamRequest{
+    optional int64 id = 1;
+    optional int64 car_id = 2;
+    optional string order_date = 3;
+    optional string pickup_date = 4;
+    optional string dropoff_date = 5;
+    optional string pickup_location = 6;
+    optional double pickup_lat = 7;
+    optional double pickup_long = 8;
+    optional string dropoff_location = 9;
+    optional double dropoff_lat = 10;
+    optional double dropoff_long = 11;
+	optional string order_by = 12;
+	int64 limit = 13;
+	int64 page = 14;
+    string cache_control = 15;
+}
+
+message GetOrderByParamReply{
+    repeated SingleOrderReply data = 1;
+    pagination pagination = 2;
+}
+
+message CreateCarRequest {
+	string car_name = 1;
+	double day_rate = 2;
+	double month_rate = 3;
+	string image = 4;
+	int64 created_by = 5;
+}
+
+message SingleCarReply {
+	int64 id = 1;
+	string car_name = 2;
+	double day_rate = 3;
+	double month_rate = 4;
+	string image = 5;
+	int64 created_by = 6;
+	string created_at = 7;
+	int64 updated_by = 8;
+	string updated_at = 9;
+	optional int64 deleted_by = 10;
+	optional string deleted_at = 11;
+}
+
+message UpdateCarRequest{
+	optional string car_name = 1;
+	optional double day_rate = 2;
+	optional double month_rate = 3;
+	optional string image = 4;
+	int64 updated_by = 5;
+    int64 id = 6;
+}
+
+message DeleteCarRequest{
+  	int64 id = 1;
+    int64 deleted_by = 2;
+}
+
+message DeleteCarReply{
+  	int64 id = 1;
+}
+
+message GetCarByIDRequest{
+  	int64 id = 1;
+    string cache_control = 2;
+}
+
+
+message GetCarByParamRequest{
+	optional int64 id = 1;
+	optional string car_name = 2;
+	optional double day_rate = 3;
+	optional double day_rate_gt = 4;
+	optional double day_rate_gte = 5;
+	optional double day_rate_lt = 6;
+	optional double day_rate_lte = 7;
+	optional double month_rate = 8;
+	optional double month_rate_gt = 9;
+	optional double month_rate_gte = 10;
+	optional double month_rate_lt = 11;
+	optional double month_rate_lte = 12;
+	optional string image = 13;
+	optional string order_by = 14;
+	int64 limit = 15;
+	int64 page = 16;
+    string cache_control = 17;
+}
+
+message pagination{
+    int64 current_page = 1;
+    int64 current_element = 2;
+    int64 total_pages = 3;
+    int64 total_elements = 4;
+    string sort_by = 5;
+}
+
+message GetCarByParamReply{
+  	repeated SingleCarReply data = 1;
+    pagination pagination = 2;
+}
+ 

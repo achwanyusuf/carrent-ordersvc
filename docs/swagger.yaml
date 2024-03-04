@@ -1,0 +1,679 @@
+definitions:
+  model.Car:
+    properties:
+      car_name:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      day_rate:
+        type: number
+      deleted_at:
+        example: "2019-08-13T00:00:00Z"
+        type: string
+      deleted_by:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      month_rate:
+        type: number
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  model.CarsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Car'
+        type: array
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/model.Pagination'
+      status_code:
+        type: integer
+      transaction_info:
+        $ref: '#/definitions/model.TransactionInfo'
+      translation:
+        $ref: '#/definitions/model.Translation'
+    type: object
+  model.CreateCar:
+    properties:
+      car_name:
+        type: string
+      day_rate:
+        type: number
+      image:
+        type: string
+      month_rate:
+        type: number
+    type: object
+  model.CreateOrder:
+    properties:
+      car_id:
+        type: integer
+      dropoff_date:
+        type: string
+      dropoff_lat:
+        type: number
+      dropoff_location:
+        type: string
+      dropoff_long:
+        type: number
+      order_date:
+        type: string
+      pickup_date:
+        type: string
+      pickup_lat:
+        type: number
+      pickup_location:
+        type: string
+      pickup_long:
+        type: number
+    type: object
+  model.EmptyResponse:
+    properties:
+      message:
+        type: string
+      status_code:
+        type: integer
+      transaction_info:
+        $ref: '#/definitions/model.TransactionInfo'
+      translation:
+        $ref: '#/definitions/model.Translation'
+    type: object
+  model.Order:
+    properties:
+      car_id:
+        type: integer
+      created_at:
+        type: string
+      created_by:
+        type: integer
+      deleted_at:
+        example: "2019-08-13T00:00:00Z"
+        type: string
+      deleted_by:
+        type: string
+      dropoff_date:
+        type: string
+      dropoff_lat:
+        type: number
+      dropoff_location:
+        type: string
+      dropoff_long:
+        type: number
+      id:
+        type: integer
+      order_date:
+        type: string
+      pickup_date:
+        type: string
+      pickup_lat:
+        type: number
+      pickup_location:
+        type: string
+      pickup_long:
+        type: number
+      updated_at:
+        type: string
+      updated_by:
+        type: integer
+    type: object
+  model.OrdersResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/model.Order'
+        type: array
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/model.Pagination'
+      status_code:
+        type: integer
+      transaction_info:
+        $ref: '#/definitions/model.TransactionInfo'
+      translation:
+        $ref: '#/definitions/model.Translation'
+    type: object
+  model.Pagination:
+    properties:
+      current_element:
+        type: integer
+      current_page:
+        type: integer
+      sort_by:
+        type: string
+      total_elements:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  model.SingleCarResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.Car'
+      message:
+        type: string
+      status_code:
+        type: integer
+      transaction_info:
+        $ref: '#/definitions/model.TransactionInfo'
+      translation:
+        $ref: '#/definitions/model.Translation'
+    type: object
+  model.SingleOrderResponse:
+    properties:
+      data:
+        $ref: '#/definitions/model.Order'
+      message:
+        type: string
+      status_code:
+        type: integer
+      transaction_info:
+        $ref: '#/definitions/model.TransactionInfo'
+      translation:
+        $ref: '#/definitions/model.Translation'
+    type: object
+  model.TransactionInfo:
+    properties:
+      cause:
+        type: string
+      error_code:
+        type: integer
+      request_id:
+        type: string
+      request_method:
+        type: string
+      request_uri:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  model.Translation:
+    properties:
+      en:
+        type: string
+    type: object
+  model.UpdateCar:
+    properties:
+      car_name:
+        type: string
+      day_rate:
+        type: number
+      image:
+        type: string
+      month_rate:
+        type: number
+    type: object
+  model.UpdateOrder:
+    type: object
+info:
+  contact:
+    email: support@carrent.com
+    name: CarRent Support
+    url: https://www.carrent.com/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+paths:
+  /car:
+    get:
+      consumes:
+      - application/json
+      description: Get cars data
+      parameters:
+      - description: search by id
+        in: query
+        name: id
+        type: number
+      - description: search by car name
+        in: query
+        name: car_name
+        type: string
+      - description: search by day rate
+        in: query
+        name: day_rate
+        type: number
+      - description: search by day rate greater than
+        in: query
+        name: day_rate_gt
+        type: number
+      - description: search by day rate greater than equal
+        in: query
+        name: day_rate_gte
+        type: number
+      - description: search by day rate less than
+        in: query
+        name: day_rate_lt
+        type: number
+      - description: search by day rate less than equal
+        in: query
+        name: day_rate_lte
+        type: number
+      - description: search by month rate
+        in: query
+        name: month_rate
+        type: number
+      - description: search by month rate greater than
+        in: query
+        name: month_rate_gt
+        type: number
+      - description: search by month rate greater than equal
+        in: query
+        name: month_rate_gte
+        type: number
+      - description: search by month rate less than
+        in: query
+        name: month_rate_lt
+        type: number
+      - description: search by month rate less than equal
+        in: query
+        name: month_rate_lte
+        type: number
+      - description: search by image
+        in: query
+        name: image
+        type: string
+      - description: ' '
+        in: query
+        name: page
+        type: integer
+      - description: ' '
+        in: query
+        name: limit
+        type: integer
+      - description: Request Cache Control
+        enum:
+        - must-revalidate
+        - none
+        in: header
+        name: Cache-Control
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CarsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.CarsResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.CarsResponse'
+      security:
+      - OAuth2Password: []
+      summary: Get cars data
+      tags:
+      - car
+    post:
+      consumes:
+      - application/json
+      description: Create car data
+      parameters:
+      - description: Car Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateCar'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+      security:
+      - OAuth2Password: []
+      summary: Create Car
+      tags:
+      - car
+  /car/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete car data
+      parameters:
+      - description: delete by id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.EmptyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.EmptyResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.EmptyResponse'
+      security:
+      - OAuth2Password: []
+      summary: Delete car data
+      tags:
+      - car
+    get:
+      consumes:
+      - application/json
+      description: Get cars data
+      parameters:
+      - description: get by id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request Cache Control
+        enum:
+        - must-revalidate
+        - none
+        in: header
+        name: Cache-Control
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+      security:
+      - OAuth2Password: []
+      summary: Get cars data
+      tags:
+      - car
+    put:
+      consumes:
+      - application/json
+      description: Update car data
+      parameters:
+      - description: update by id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Car Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateCar'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.SingleCarResponse'
+      security:
+      - OAuth2Password: []
+      summary: Update car data
+      tags:
+      - car
+  /order:
+    get:
+      consumes:
+      - application/json
+      description: Get orders data
+      parameters:
+      - description: search by id
+        in: query
+        name: id
+        type: number
+      - description: search by car id
+        in: query
+        name: car_id
+        type: number
+      - description: search by order date
+        in: query
+        name: order_date
+        type: string
+      - description: search by pickup date
+        in: query
+        name: pickup_date
+        type: string
+      - description: search by dropoff date
+        in: query
+        name: dropoff_date
+        type: string
+      - description: search by pickup location
+        in: query
+        name: pickup_location
+        type: string
+      - description: search by lat
+        in: query
+        name: pickup_lat
+        type: string
+      - description: search by long
+        in: query
+        name: pickup_long
+        type: string
+      - description: search by dropoff location
+        in: query
+        name: dropoff_location
+        type: string
+      - description: search by lat
+        in: query
+        name: dropoff_lat
+        type: string
+      - description: search by long
+        in: query
+        name: dropoff_long
+        type: string
+      - description: ' '
+        in: query
+        name: page
+        type: integer
+      - description: ' '
+        in: query
+        name: limit
+        type: integer
+      - description: Request Cache Control
+        enum:
+        - must-revalidate
+        - none
+        in: header
+        name: Cache-Control
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.OrdersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.OrdersResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.OrdersResponse'
+      security:
+      - OAuth2Password: []
+      summary: Get orders data
+      tags:
+      - order
+    post:
+      consumes:
+      - application/json
+      description: Create order data
+      parameters:
+      - description: Order Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.CreateOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+      security:
+      - OAuth2Password: []
+      summary: Create Order
+      tags:
+      - order
+  /order/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete order data
+      parameters:
+      - description: delete by id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.EmptyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.EmptyResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.EmptyResponse'
+      security:
+      - OAuth2Password: []
+      summary: Delete order data
+      tags:
+      - order
+    get:
+      consumes:
+      - application/json
+      description: Get orders data
+      parameters:
+      - description: get by id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Request Cache Control
+        enum:
+        - must-revalidate
+        - none
+        in: header
+        name: Cache-Control
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+      security:
+      - OAuth2Password: []
+      summary: Get orders data
+      tags:
+      - order
+    put:
+      consumes:
+      - application/json
+      description: Update order data
+      parameters:
+      - description: update by id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Order Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/model.UpdateOrder'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.SingleOrderResponse'
+      security:
+      - OAuth2Password: []
+      summary: Update order data
+      tags:
+      - order
+securityDefinitions:
+  OAuth2Password:
+    flow: password
+    tokenUrl: '%s'
+    type: oauth2
+swagger: "2.0"

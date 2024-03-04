@@ -1,0 +1,1 @@
+ALTER TABLE "orders" ADD CONSTRAINT fk_order_car_key FOREIGN KEY("car_id") REFERENCES "cars" ("id") ON DELETE CASCADE;
