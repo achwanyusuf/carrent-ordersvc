@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/achwanyusuf/carrent-lib/pkg/govalidator"
 	"github.com/achwanyusuf/carrent-lib/pkg/grpcclientpool"
 	"github.com/achwanyusuf/carrent-lib/pkg/httpserver"
 	"github.com/achwanyusuf/carrent-lib/pkg/logger"
@@ -127,12 +128,18 @@ func main() {
 	gin := http.NewHTTPServer()
 	http.SetSwaggo(docs.SwaggerInfo)
 
+	validate, err := govalidator.New()
+	if err != nil {
+		panic(err)
+	}
+
 	// init http router
 	restCfg := rest.RestDep{
-		Conf:    cfg.Rest,
-		Log:     &log,
-		Usecase: uc,
-		Gin:     gin,
+		Conf:     cfg.Rest,
+		Log:      &log,
+		Usecase:  uc,
+		Gin:      gin,
+		Validate: validate,
 	}
 	handler := rest.New(&restCfg)
 
@@ -150,6 +157,7 @@ func main() {
 		log.Info(context.Background(), "server listening at %v", listener.Addr())
 		if err := grpc.Serve(listener); err != nil {
 			log.Error(context.Background(), "failed to serve: %v", err)
+			panic(err)
 		}
 	}()
 

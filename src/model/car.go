@@ -184,10 +184,10 @@ func (g *GetCarsByParam) GetQuery() []qm.QueryMod {
 }
 
 type CreateCar struct {
-	CarName   string  `json:"car_name"`
-	DayRate   float64 `json:"day_rate"`
-	MonthRate float64 `json:"month_rate"`
-	Image     string  `json:"image"`
+	CarName   string  `json:"car_name" validate:"required,alphanumspace,min=8,max=50"`
+	DayRate   float64 `json:"day_rate" validate:"required,min=10000,max=1000000"`
+	MonthRate float64 `json:"month_rate" validate:"required,min=250000,max=30000000"`
+	Image     string  `json:"image" validate:"required,uri,min=5,max=256"`
 	CreatedBy int64   `json:"-"`
 }
 
@@ -212,10 +212,10 @@ func (v *CreateCar) Validate() error {
 }
 
 type UpdateCar struct {
-	CarName   null.String  `json:"car_name" swaggertype:"string"`
-	DayRate   null.Float64 `json:"day_rate" swaggertype:"number"`
-	MonthRate null.Float64 `json:"month_rate" swaggertype:"number"`
-	Image     null.String  `json:"image" swaggertype:"string"`
+	CarName   null.String  `json:"car_name" swaggertype:"string" validate:"required,alphanumspace,min=8,max=50"`
+	DayRate   null.Float64 `json:"day_rate" swaggertype:"number" validate:"required,min=10000,max=1000000"`
+	MonthRate null.Float64 `json:"month_rate" swaggertype:"number" validate:"required,min=250000,max=30000000"`
+	Image     null.String  `json:"image" swaggertype:"string" validate:"required,uri,min=5,max=256"`
 	UpdatedBy int64        `json:"-"`
 }
 

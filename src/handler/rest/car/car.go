@@ -12,13 +12,15 @@ import (
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/svcerr"
 	"github.com/achwanyusuf/carrent-ordersvc/src/usecase/car"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
 
 type CarDep struct {
-	log  logger.Logger
-	car  car.CarInterface
-	conf Conf
+	log      logger.Logger
+	car      car.CarInterface
+	conf     Conf
+	validate *validator.Validate
 }
 
 type Conf struct{}
@@ -31,11 +33,12 @@ type CarInterface interface {
 	DeleteByID(ctx *gin.Context)
 }
 
-func New(conf Conf, log *logger.Logger, c car.CarInterface) CarInterface {
+func New(conf Conf, log *logger.Logger, c car.CarInterface, validate *validator.Validate) CarInterface {
 	return &CarDep{
-		conf: conf,
-		log:  *log,
-		car:  c,
+		conf:     conf,
+		log:      *log,
+		car:      c,
+		validate: validate,
 	}
 }
 
@@ -72,6 +75,12 @@ func (c *CarDep) Create(ctx *gin.Context) {
 	}
 
 	carInput.CreatedBy = ctx.Value("id").(int64)
+	if err = c.validate.Struct(carInput); err != nil {
+		statusCode := response.Transform(ctx, c.log, http.StatusCreated, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error validate struct"))
+		ctx.JSON(statusCode, response)
+		return
+	}
+
 	result, err = c.car.Create(ctx, carInput)
 	if err != nil {
 		statusCode := response.Transform(ctx, c.log, http.StatusCreated, err)
@@ -127,6 +136,11 @@ func (c *CarDep) UpdateByID(ctx *gin.Context) {
 	scope := ctx.Value("scope").(string)
 	if scope != model.SuperAdminScope {
 		id = ctx.Value("id").(int64)
+	}
+	if err = c.validate.Struct(updateData); err != nil {
+		statusCode := response.Transform(ctx, c.log, http.StatusOK, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error validate struct"))
+		ctx.JSON(statusCode, response)
+		return
 	}
 	result, err := c.car.UpdateByID(ctx, id, updateData)
 	if err != nil {

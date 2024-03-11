@@ -23,15 +23,3 @@ func (g *GRPC) newGRPC() *grpc.Server {
 	listener = lis
 	return grpc.NewServer()
 }
-
-// func (g *GRPC) newGRPCClient() (conn, grpcmodel.OrderClient) {
-// 	// Set up a connection to the server.
-// 	conn, err := grpc.Dial(fmt.Sprintf("%s:%v", g.Host, g.Port), grpc.WithTransportCredentials(insecure.NewCredentials()))
-// 	if err != nil {
-// 		log.Fatalf("did not connect: %v", err)
-// 	}
-// 	defer conn.Close()
-// 	orderClient := grpcmodel.NewOrderClient(conn)
-
-// 	return orderClient
-// }

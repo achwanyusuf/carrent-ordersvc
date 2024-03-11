@@ -45,36 +45,75 @@ definitions:
   model.CreateCar:
     properties:
       car_name:
+        maxLength: 50
+        minLength: 8
         type: string
       day_rate:
+        maximum: 1000000
+        minimum: 10000
         type: number
       image:
+        maxLength: 256
+        minLength: 5
         type: string
       month_rate:
+        maximum: 30000000
+        minimum: 250000
         type: number
+    required:
+    - car_name
+    - day_rate
+    - image
+    - month_rate
     type: object
   model.CreateOrder:
     properties:
       car_id:
+        minimum: 1
         type: integer
       dropoff_date:
         type: string
       dropoff_lat:
+        maximum: 90
+        minimum: -90
         type: number
       dropoff_location:
+        maxLength: 50
+        minLength: 30
         type: string
       dropoff_long:
+        maximum: 180
+        minimum: -180
         type: number
       order_date:
+        example: "2024-02-02T00:00:00Z"
         type: string
       pickup_date:
+        example: "2024-02-02T00:00:00Z"
         type: string
       pickup_lat:
+        maximum: 90
+        minimum: -90
         type: number
       pickup_location:
+        maxLength: 50
+        minLength: 30
         type: string
       pickup_long:
+        maximum: 180
+        minimum: -180
         type: number
+    required:
+    - car_id
+    - dropoff_date
+    - dropoff_lat
+    - dropoff_location
+    - dropoff_long
+    - order_date
+    - pickup_date
+    - pickup_lat
+    - pickup_location
+    - pickup_long
     type: object
   model.EmptyResponse:
     properties:
@@ -204,15 +243,76 @@ definitions:
   model.UpdateCar:
     properties:
       car_name:
+        maxLength: 50
+        minLength: 8
         type: string
       day_rate:
+        maximum: 1000000
+        minimum: 10000
         type: number
       image:
+        maxLength: 256
+        minLength: 5
         type: string
       month_rate:
+        maximum: 30000000
+        minimum: 250000
         type: number
+    required:
+    - car_name
+    - day_rate
+    - image
+    - month_rate
     type: object
   model.UpdateOrder:
+    properties:
+      car_id:
+        minimum: 1
+        type: number
+      dropoff_date:
+        example: "2024-02-02T00:00:00Z"
+        type: string
+      dropoff_lat:
+        maximum: 90
+        minimum: -90
+        type: number
+      dropoff_location:
+        maxLength: 50
+        minLength: 30
+        type: string
+      dropoff_long:
+        maximum: 180
+        minimum: -180
+        type: number
+      order_date:
+        example: "2024-02-02T00:00:00Z"
+        type: string
+      pickup_date:
+        example: "2024-02-02T00:00:00Z"
+        type: string
+      pickup_lat:
+        maximum: 90
+        minimum: -90
+        type: number
+      pickup_location:
+        maxLength: 50
+        minLength: 30
+        type: string
+      pickup_long:
+        maximum: 180
+        minimum: -180
+        type: number
+    required:
+    - car_id
+    - dropoff_date
+    - dropoff_lat
+    - dropoff_location
+    - dropoff_long
+    - order_date
+    - pickup_date
+    - pickup_lat
+    - pickup_location
+    - pickup_long
     type: object
 info:
   contact:

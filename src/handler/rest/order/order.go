@@ -12,13 +12,15 @@ import (
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/svcerr"
 	"github.com/achwanyusuf/carrent-ordersvc/src/usecase/order"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
 
 type OrderDep struct {
-	log   logger.Logger
-	order order.OrderInterface
-	conf  Conf
+	log      logger.Logger
+	order    order.OrderInterface
+	conf     Conf
+	validate *validator.Validate
 }
 
 type Conf struct{}
@@ -31,11 +33,12 @@ type OrderInterface interface {
 	DeleteByID(ctx *gin.Context)
 }
 
-func New(conf Conf, log *logger.Logger, c order.OrderInterface) OrderInterface {
+func New(conf Conf, log *logger.Logger, c order.OrderInterface, validate *validator.Validate) OrderInterface {
 	return &OrderDep{
-		conf:  conf,
-		log:   *log,
-		order: c,
+		conf:     conf,
+		log:      *log,
+		order:    c,
+		validate: validate,
 	}
 }
 
@@ -67,6 +70,12 @@ func (o *OrderDep) Create(ctx *gin.Context) {
 
 	if err = json.Unmarshal(body, &orderInput); err != nil {
 		statusCode := response.Transform(ctx, o.log, http.StatusCreated, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error unmarshal body"))
+		ctx.JSON(statusCode, response)
+		return
+	}
+
+	if err = o.validate.Struct(orderInput); err != nil {
+		statusCode := response.Transform(ctx, o.log, http.StatusCreated, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error validate struct"))
 		ctx.JSON(statusCode, response)
 		return
 	}
@@ -127,6 +136,11 @@ func (o *OrderDep) UpdateByID(ctx *gin.Context) {
 	scope := ctx.Value("scope").(string)
 	if scope != model.SuperAdminScope {
 		id = ctx.Value("id").(int64)
+	}
+	if err = o.validate.Struct(updateData); err != nil {
+		statusCode := response.Transform(ctx, o.log, http.StatusOK, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error validate struct"))
+		ctx.JSON(statusCode, response)
+		return
 	}
 	result, err := o.order.UpdateByID(ctx, id, updateData)
 	if err != nil {

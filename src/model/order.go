@@ -180,16 +180,16 @@ func (g *GetOrdersByParam) GetQuery() []qm.QueryMod {
 }
 
 type CreateOrder struct {
-	CarID           int64     `json:"car_id"`
-	OrderDate       time.Time `json:"order_date"`
-	PickupDate      time.Time `json:"pickup_date"`
-	DropoffDate     time.Time `json:"dropoff_date"`
-	PickupLocation  string    `json:"pickup_location"`
-	PickupLat       float64   `json:"pickup_lat"`
-	PickupLong      float64   `json:"pickup_long"`
-	DropoffLocation string    `json:"dropoff_location"`
-	DropoffLat      float64   `json:"dropoff_lat"`
-	DropoffLong     float64   `json:"dropoff_long"`
+	CarID           int64     `json:"car_id" validate:"required,min=1"`
+	OrderDate       time.Time `json:"order_date" example:"2024-02-02T00:00:00Z" validate:"required"`
+	PickupDate      time.Time `json:"pickup_date" example:"2024-02-02T00:00:00Z" validate:"required"`
+	DropoffDate     time.Time `json:"dropoff_date" validate:"required"`
+	PickupLocation  string    `json:"pickup_location" validate:"required,min=30,max=50"`
+	PickupLat       float64   `json:"pickup_lat" validate:"required,min=-90,max=90"`
+	PickupLong      float64   `json:"pickup_long" validate:"required,min=-180,max=180"`
+	DropoffLocation string    `json:"dropoff_location" validate:"required,min=30,max=50"`
+	DropoffLat      float64   `json:"dropoff_lat" validate:"required,min=-90,max=90"`
+	DropoffLong     float64   `json:"dropoff_long" validate:"required,min=-180,max=180"`
 	CreatedBy       int64     `json:"-"`
 }
 
@@ -238,16 +238,16 @@ func (v *CreateOrder) Validate() error {
 }
 
 type UpdateOrder struct {
-	CarID           null.Int64   `json:"car_id"`
-	OrderDate       null.Time    `json:"order_date"`
-	PickupDate      null.Time    `json:"pickup_date"`
-	DropoffDate     null.Time    `json:"dropoff_date"`
-	PickupLocation  null.String  `json:"pickup_location"`
-	PickupLat       null.Float64 `json:"pickup_lat"`
-	PickupLong      null.Float64 `json:"pickup_long"`
-	DropoffLocation null.String  `json:"dropoff_location"`
-	DropoffLat      null.Float64 `json:"dropoff_lat"`
-	DropoffLong     null.Float64 `json:"dropoff_long"`
+	CarID           null.Int64   `json:"car_id" swaggertype:"number" validate:"required,min=1"`
+	OrderDate       null.Time    `json:"order_date" swaggertype:"string" example:"2024-02-02T00:00:00Z" validate:"required"`
+	PickupDate      null.Time    `json:"pickup_date" swaggertype:"string" example:"2024-02-02T00:00:00Z" validate:"required"`
+	DropoffDate     null.Time    `json:"dropoff_date" swaggertype:"string" example:"2024-02-02T00:00:00Z" validate:"required"`
+	PickupLocation  null.String  `json:"pickup_location" swaggertype:"string" validate:"required,min=30,max=50"`
+	PickupLat       null.Float64 `json:"pickup_lat" swaggertype:"number" validate:"required,min=-90,max=90"`
+	PickupLong      null.Float64 `json:"pickup_long" swaggertype:"number" validate:"required,min=-180,max=180"`
+	DropoffLocation null.String  `json:"dropoff_location" swaggertype:"string" validate:"required,min=30,max=50"`
+	DropoffLat      null.Float64 `json:"dropoff_lat" swaggertype:"number" validate:"required,min=-90,max=90"`
+	DropoffLong     null.Float64 `json:"dropoff_long" swaggertype:"number" validate:"required,min=-180,max=180"`
 	UpdatedBy       int64        `json:"-"`
 }
 

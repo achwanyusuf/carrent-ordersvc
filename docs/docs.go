@@ -786,53 +786,94 @@ const docTemplate = `{
         },
         "model.CreateCar": {
             "type": "object",
+            "required": [
+                "car_name",
+                "day_rate",
+                "image",
+                "month_rate"
+            ],
             "properties": {
                 "car_name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 8
                 },
                 "day_rate": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 1000000,
+                    "minimum": 10000
                 },
                 "image": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 5
                 },
                 "month_rate": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 30000000,
+                    "minimum": 250000
                 }
             }
         },
         "model.CreateOrder": {
             "type": "object",
+            "required": [
+                "car_id",
+                "dropoff_date",
+                "dropoff_lat",
+                "dropoff_location",
+                "dropoff_long",
+                "order_date",
+                "pickup_date",
+                "pickup_lat",
+                "pickup_location",
+                "pickup_long"
+            ],
             "properties": {
                 "car_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 },
                 "dropoff_date": {
                     "type": "string"
                 },
                 "dropoff_lat": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 90,
+                    "minimum": -90
                 },
                 "dropoff_location": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 30
                 },
                 "dropoff_long": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
                 },
                 "order_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-02-02T00:00:00Z"
                 },
                 "pickup_date": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2024-02-02T00:00:00Z"
                 },
                 "pickup_lat": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 90,
+                    "minimum": -90
                 },
                 "pickup_location": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 30
                 },
                 "pickup_long": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
                 }
             }
         },
@@ -1029,23 +1070,97 @@ const docTemplate = `{
         },
         "model.UpdateCar": {
             "type": "object",
+            "required": [
+                "car_name",
+                "day_rate",
+                "image",
+                "month_rate"
+            ],
             "properties": {
                 "car_name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 8
                 },
                 "day_rate": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 1000000,
+                    "minimum": 10000
                 },
                 "image": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 5
                 },
                 "month_rate": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 30000000,
+                    "minimum": 250000
                 }
             }
         },
         "model.UpdateOrder": {
-            "type": "object"
+            "type": "object",
+            "required": [
+                "car_id",
+                "dropoff_date",
+                "dropoff_lat",
+                "dropoff_location",
+                "dropoff_long",
+                "order_date",
+                "pickup_date",
+                "pickup_lat",
+                "pickup_location",
+                "pickup_long"
+            ],
+            "properties": {
+                "car_id": {
+                    "type": "number",
+                    "minimum": 1
+                },
+                "dropoff_date": {
+                    "type": "string",
+                    "example": "2024-02-02T00:00:00Z"
+                },
+                "dropoff_lat": {
+                    "type": "number",
+                    "maximum": 90,
+                    "minimum": -90
+                },
+                "dropoff_location": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 30
+                },
+                "dropoff_long": {
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
+                },
+                "order_date": {
+                    "type": "string",
+                    "example": "2024-02-02T00:00:00Z"
+                },
+                "pickup_date": {
+                    "type": "string",
+                    "example": "2024-02-02T00:00:00Z"
+                },
+                "pickup_lat": {
+                    "type": "number",
+                    "maximum": 90,
+                    "minimum": -90
+                },
+                "pickup_location": {
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 30
+                },
+                "pickup_long": {
+                    "type": "number",
+                    "maximum": 180,
+                    "minimum": -180
+                }
+            }
         }
     },
     "securityDefinitions": {

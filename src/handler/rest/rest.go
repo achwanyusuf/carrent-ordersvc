@@ -9,13 +9,15 @@ import (
 	"github.com/achwanyusuf/carrent-ordersvc/src/model"
 	"github.com/achwanyusuf/carrent-ordersvc/src/usecase"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type RestDep struct {
-	Conf    Config
-	Log     *logger.Logger
-	Usecase *usecase.UsecaseInterface
-	Gin     *gin.Engine
+	Conf     Config
+	Log      *logger.Logger
+	Usecase  *usecase.UsecaseInterface
+	Gin      *gin.Engine
+	Validate *validator.Validate
 }
 
 type Config struct {
@@ -31,8 +33,8 @@ type RestInterface struct {
 
 func New(r *RestDep) *RestInterface {
 	return &RestInterface{
-		car.New(r.Conf.Car, r.Log, r.Usecase.Car),
-		order.New(r.Conf.Order, r.Log, r.Usecase.Order),
+		car.New(r.Conf.Car, r.Log, r.Usecase.Car, r.Validate),
+		order.New(r.Conf.Order, r.Log, r.Usecase.Order, r.Validate),
 	}
 }
 
