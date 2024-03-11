@@ -34,7 +34,7 @@ import (
 // @tokenUrl %s
 var (
 	staticConfPath, Namespace, BuildTime, Version string
-	migrateup, migratedown                        bool
+	migrateup, migratedown, runHTTP, runGRPC      bool
 	OAuth2PasswordTokenUrl                        string
 )
 
@@ -42,6 +42,8 @@ func main() {
 	flag.StringVar(&staticConfPath, "staticConfPath", "./conf/conf.yaml", "config path")
 	flag.BoolVar(&migrateup, "migrateup", false, "run migration up")
 	flag.BoolVar(&migratedown, "migratedown", false, "run migration up")
+	flag.BoolVar(&runHTTP, "http", true, "run http")
+	flag.BoolVar(&runGRPC, "grpc", false, "run grpc")
 	flag.Parse()
 	cfg, err := conf.New(staticConfPath)
 	if err != nil {
@@ -115,35 +117,6 @@ func main() {
 		Domain: dom,
 	})
 
-	cfg.App.Swagger.Title = Namespace
-	cfg.App.Swagger.Version = Version
-	// setup http server
-	http := httpserver.HTTPSetting{
-		Env:     cfg.App.Env,
-		Conf:    cfg.App.HTTPServer,
-		Swagger: cfg.App.Swagger,
-		Log:     log,
-	}
-
-	gin := http.NewHTTPServer()
-	http.SetSwaggo(docs.SwaggerInfo)
-
-	validate, err := govalidator.New()
-	if err != nil {
-		panic(err)
-	}
-
-	// init http router
-	restCfg := rest.RestDep{
-		Conf:     cfg.Rest,
-		Log:      &log,
-		Usecase:  uc,
-		Gin:      gin,
-		Validate: validate,
-	}
-	handler := rest.New(&restCfg)
-
-	restCfg.Serve(handler)
 	readSignal := make(chan os.Signal, 1)
 
 	signal.Notify(
@@ -152,18 +125,51 @@ func main() {
 		syscall.SIGINT,
 	)
 
-	go func() {
-		grpcmodel.RegisterOrderServer(grpc, grpcHandler.New(grpcHandler.Config{}, &log, uc))
-		log.Info(context.Background(), "server listening at %v", listener.Addr())
-		if err := grpc.Serve(listener); err != nil {
-			log.Error(context.Background(), "failed to serve: %v", err)
-			panic(err)
-		}
-	}()
+	if runGRPC {
+		go func() {
+			grpcmodel.RegisterOrderServer(grpc, grpcHandler.New(grpcHandler.Config{}, &log, uc))
+			log.Info(context.Background(), "server listening at %v", listener.Addr())
+			if err := grpc.Serve(listener); err != nil {
+				log.Error(context.Background(), "failed to serve: %v", err)
+				panic(err)
+			}
+		}()
+	}
 
-	go func() {
-		http.Run()
-	}()
+	if runHTTP {
+		go func() {
+			cfg.App.Swagger.Title = Namespace
+			cfg.App.Swagger.Version = Version
+			// setup http server
+			http := httpserver.HTTPSetting{
+				Env:     cfg.App.Env,
+				Conf:    cfg.App.HTTPServer,
+				Swagger: cfg.App.Swagger,
+				Log:     log,
+			}
+
+			gin := http.NewHTTPServer()
+			http.SetSwaggo(docs.SwaggerInfo)
+
+			validate, err := govalidator.New()
+			if err != nil {
+				panic(err)
+			}
+
+			// init http router
+			restCfg := rest.RestDep{
+				Conf:     cfg.Rest,
+				Log:      &log,
+				Usecase:  uc,
+				Gin:      gin,
+				Validate: validate,
+			}
+			handler := rest.New(&restCfg)
+
+			restCfg.Serve(handler)
+			http.Run()
+		}()
+	}
 
 	<-readSignal
 

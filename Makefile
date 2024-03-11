@@ -32,6 +32,14 @@ kill-process:
 run: kill-process build
 	@./build/app
 
+.PHONY: run-grpc
+run-grpc: kill-process build
+	@./build/app -http=false -grpc=true
+
+.PHONY: run-all
+run-all: kill-process build
+	@./build/app -http=true -grpc=true
+
 .PHONY: migrate-up
 migrate-up: kill-process build
 	@./build/app -migrateup=true
