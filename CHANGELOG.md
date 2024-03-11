@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/achwanyusuf/carrent-ordersvc/compare/v1.2.0...v1.3.0) (2024-03-11)
+
+
+### Features
+
+* add command to enable/disable bff and service ([ee565d9](https://github.com/achwanyusuf/carrent-ordersvc/commit/ee565d9e12205b112d9edd4756b90a4c3c6ab61c))
+
 ## [1.2.0](https://github.com/achwanyusuf/carrent-ordersvc/compare/v1.1.0...v1.2.0) (2024-03-11)
 
 
