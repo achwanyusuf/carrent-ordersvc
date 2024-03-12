@@ -79,6 +79,8 @@ github.com/achwanyusuf/carrent-lib v1.4.0 h1:WIDbuWrfZQpy0YJoMNFBhXmBJAp8D1KjNUs
 github.com/achwanyusuf/carrent-lib v1.4.0/go.mod h1:ZCnTp8paxEgNmoHJ1eUhQm0EGwzJaIFwiP+R/mWEWYI=
 github.com/achwanyusuf/carrent-lib v1.4.1 h1:WkxvDKfASppawGLAi0Wqs3lXrP16VFcHAU64oxxuBec=
 github.com/achwanyusuf/carrent-lib v1.4.1/go.mod h1:ZCnTp8paxEgNmoHJ1eUhQm0EGwzJaIFwiP+R/mWEWYI=
+github.com/achwanyusuf/carrent-lib v1.5.0 h1:wIBYb+aZVOghdcGzWjTi+xhIiAlS2TKuqSPyapCkmng=
+github.com/achwanyusuf/carrent-lib v1.5.0/go.mod h1:ZCnTp8paxEgNmoHJ1eUhQm0EGwzJaIFwiP+R/mWEWYI=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=

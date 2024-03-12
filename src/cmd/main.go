@@ -87,18 +87,16 @@ func main() {
 	// setup redis connection
 	redis := redis.RedisConnect(cfg.App.Redis)
 
-	// setup grpc connection
-	grpcSetting := GRPC{
-		Host: "localhost",
-		Port: 9091,
+	tlsCredentials, err := loadClientTLSCredentials(cfg.App.GRPC.ClientCert, cfg.App.GRPC.ClientHost)
+	if err != nil {
+		log.Fatal(context.Background(), "cannot load TLS credentials: %v", err)
 	}
-	grpc := grpcSetting.newGRPC()
-
 	grpcClient := grpcclientpool.New(&grpcclientpool.ClientPoolGRPC{
 		MaxOpenConnection: 10,
 		MaxIdleConnection: 10,
 		QueueTotal:        10000,
 		Address:           ":9091",
+		Credential:        tlsCredentials,
 	})
 
 	// init domain
@@ -127,6 +125,13 @@ func main() {
 
 	if runGRPC {
 		go func() {
+			// setup grpc connection
+			grpcSetting := GRPC{
+				Host: cfg.App.GRPC.Host,
+				Port: cfg.App.GRPC.Port,
+				Log:  log,
+			}
+			grpc := grpcSetting.newGRPC(cfg.App.GRPC.ServerCert, cfg.App.GRPC.ServerKey)
 			grpcmodel.RegisterOrderServer(grpc, grpcHandler.New(grpcHandler.Config{}, &log, uc))
 			log.Info(context.Background(), "server listening at %v", listener.Addr())
 			if err := grpc.Serve(listener); err != nil {
@@ -179,7 +184,6 @@ func main() {
 	// close all connection here before shutdown
 	psql.Close()
 	redis.Close()
-	grpc.Stop()
 	grpcClient.Release()
 	log.Error(context.Background(), "service shutdown!", time.Since(st).Seconds(), "sec")
 }

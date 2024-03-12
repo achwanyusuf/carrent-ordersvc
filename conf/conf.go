@@ -16,10 +16,20 @@ type Config struct {
 	Domain  domain.Config  `mapstructure:"domain"`
 }
 
+type GRPC struct {
+	Host       string `mapstructure:"host"`
+	Port       int    `mapstructure:"port"`
+	ServerCert string `mapstructure:"server_cert"`
+	ServerKey  string `mapstructure:"server_key"`
+	ClientCert string `mapstructure:"client_cert"`
+	ClientHost string `mapstructure:"client_host"`
+}
+
 type App struct {
 	Env        string                `mapstructure:"env"`
 	HTTPServer httpserver.HTTPServer `mapstructure:"http_server"`
 	Swagger    httpserver.Swagger    `mapstructure:"swagger"`
 	PSQL       psql.PSQL             `mapstructure:"psql"`
 	Redis      redis.Redis           `mapstructure:"redis"`
+	GRPC       GRPC                  `mapstructure:"grpc"`
 }

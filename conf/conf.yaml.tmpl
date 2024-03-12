@@ -1,15 +1,14 @@
 app:
     env: "local"
-    description: "API Documentation of accountsvc"
     http_server:
         host: "localhost"
-        port: "8082"
+        port: 8082
         read_timeout: 60s
         write_timeout: 60s
     swagger:
-        description: "API Documentation of accountsvc"
+        description: "API Documentation of ordersvc"
         host: "localhost"
-        port: 8081
+        port: 8082
         oauth2_password_token_url: "http://localhost:8081/api/oauth2"
     psql:
         name: "carrent_orderdb"
@@ -29,20 +28,20 @@ app:
         user_name: ""
         pool_size: 10
         max_retries: 3
+    grpc:
+        host: "localhost"
+        port: 9091
+        server_cert: "server_cert.pem"
+        server_key: "server_key.pem"
+        client_cert: "ca_cert.pem"
+        client_host: "ordersvc.localhost"
 rest:
-    token_secret: "aS53hs8kahs912"
-usecase:
-    account:
-        token_secret: "aS53hs8kahs912"
-        aes_secret: "62157hasjhjas"
-        token_timeout: 5h
+    token_secret: ""
+    integ_token: ""
 domain:
-    account:
+    car:
         page_limit: 10
         expiration_time: 30s
-    account_role:
-        page_limit: 10
-        expiration_time: 30s
-    role:
+    order:
         page_limit: 10
         expiration_time: 30s

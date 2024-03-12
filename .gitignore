@@ -2,3 +2,4 @@
 build/*
 sqlboiler.toml
 conf/conf.yaml
+script/cred/*.pem

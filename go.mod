@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1
-	github.com/achwanyusuf/carrent-lib v1.4.1
+	github.com/achwanyusuf/carrent-lib v1.5.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.19.0
