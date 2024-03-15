@@ -7,6 +7,8 @@ import (
 	"github.com/achwanyusuf/carrent-lib/pkg/errormsg"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/grpcmodel"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/svcerr"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (o *OrderDep) InsertGRPC(ctx context.Context, v *grpcmodel.CreateOrderRequest) (*grpcmodel.SingleOrderReply, error) {
@@ -78,6 +80,11 @@ func (o *OrderDep) GetByIDGRPC(ctx context.Context, v *grpcmodel.GetOrderByIDReq
 	defer cancel()
 	res, err := clientService.GetOrderByID(ctx, v)
 	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			if st.Code() == codes.NotFound {
+				return nil, errormsg.WrapErr(svcerr.OrderSVCNotFound, err, "data not found")
+			}
+		}
 		return nil, errormsg.WrapErr(svcerr.OrderSVCErrorGRPCClient, err, "error grpc client")
 	}
 

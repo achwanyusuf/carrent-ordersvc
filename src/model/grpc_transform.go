@@ -2,13 +2,26 @@ package model
 
 import (
 	"context"
+	"net/http"
 	"time"
 
+	"github.com/achwanyusuf/carrent-lib/pkg/errormsg"
 	"github.com/achwanyusuf/carrent-lib/pkg/logger"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/grpcmodel"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/psqlmodel"
 	"github.com/volatiletech/null/v8"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
+
+func ErrorHandler(err error) error {
+	getErrMsg := errormsg.GetErrorData(err)
+	if getErrMsg.WrappedMessage.StatusCode == http.StatusNotFound {
+		return status.Error(codes.NotFound, getErrMsg.DebugError.Error())
+	} else {
+		return status.Error(codes.InvalidArgument, getErrMsg.DebugError.Error())
+	}
+}
 
 func FillUpdateCar(car *psqlmodel.Car, v *grpcmodel.UpdateCarRequest) {
 	if v.CarName != nil {
@@ -250,11 +263,8 @@ func TransformSingleOrderReplyToOrder(ctx context.Context, v *grpcmodel.SingleOr
 
 func TransformOrderByParamReplyToOrder(ctx context.Context, v *grpcmodel.GetOrderByParamReply, log logger.Logger) ([]Order, Pagination) {
 	var (
-		orders      []Order
-		pickupDate  time.Time
-		dropoffDate time.Time
-		orderDate   time.Time
-		pagination  Pagination
+		orders     []Order
+		pagination Pagination
 	)
 
 	for _, val := range v.Data {
@@ -264,6 +274,20 @@ func TransformOrderByParamReplyToOrder(ctx context.Context, v *grpcmodel.GetOrde
 		}
 
 		updatedAt, err := time.Parse(time.RFC3339, val.UpdatedAt)
+		if err != nil {
+			log.Error(ctx, err, "error parsing time")
+		}
+		dropoffDate, err := time.Parse(time.RFC3339, val.DropoffDate)
+		if err != nil {
+			log.Error(ctx, err, "error parsing time")
+		}
+
+		orderDate, err := time.Parse(time.RFC3339, val.OrderDate)
+		if err != nil {
+			log.Error(ctx, err, "error parsing time")
+		}
+
+		pickupDate, err := time.Parse(time.RFC3339, val.PickupDate)
 		if err != nil {
 			log.Error(ctx, err, "error parsing time")
 		}

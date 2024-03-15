@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/achwanyusuf/carrent-lib/pkg/errormsg"
+	"github.com/achwanyusuf/carrent-lib/pkg/regex"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/grpcmodel"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/psqlmodel"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/svcerr"
@@ -20,18 +21,18 @@ var (
 
 type GetCarByParam struct {
 	ID           null.Int64   `schema:"id" json:"id"`
-	CarName      null.String  `json:"car_name"`
-	DayRate      null.Float64 `json:"day_rate"`
-	DayRateGT    null.Float64 `json:"day_rate_gt"`
-	DayRateGTE   null.Float64 `json:"day_rate_gte"`
-	DayRateLT    null.Float64 `json:"day_rate_lt"`
-	DayRateLTE   null.Float64 `json:"day_rate_lte"`
-	MonthRate    null.Float64 `json:"month_rate"`
-	MonthRateGT  null.Float64 `json:"month_rate_gt"`
-	MonthRateGTE null.Float64 `json:"month_rate_gte"`
-	MonthRateLT  null.Float64 `json:"month_rate_lt"`
-	MonthRateLTE null.Float64 `json:"month_rate_lte"`
-	Image        null.String  `json:"image"`
+	CarName      null.String  `schema:"car_name" json:"car_name"`
+	DayRate      null.Float64 `schema:"day_rate" json:"day_rate"`
+	DayRateGT    null.Float64 `schema:"day_rate_gt" json:"day_rate_gt"`
+	DayRateGTE   null.Float64 `schema:"day_rate_gte" json:"day_rate_gte"`
+	DayRateLT    null.Float64 `schema:"day_rate_lt" json:"day_rate_lt"`
+	DayRateLTE   null.Float64 `schema:"day_rate_lte" json:"day_rate_lte"`
+	MonthRate    null.Float64 `schema:"month_rate" json:"month_rate"`
+	MonthRateGT  null.Float64 `schema:"month_rate_gt" json:"month_rate_gt"`
+	MonthRateGTE null.Float64 `schema:"month_rate_gte" json:"month_rate_gte"`
+	MonthRateLT  null.Float64 `schema:"month_rate_lt" json:"month_rate_lt"`
+	MonthRateLTE null.Float64 `schema:"month_rate_lte" json:"month_rate_lte"`
+	Image        null.String  `schema:"image" json:"image"`
 }
 
 func (g *GetCarByParam) GetQuery() []qm.QueryMod {
@@ -41,7 +42,7 @@ func (g *GetCarByParam) GetQuery() []qm.QueryMod {
 	}
 
 	if g.CarName.Valid {
-		res = append(res, qm.Where("car_name=?", g.CarName.String))
+		res = append(res, qm.Where("car_name like ?", "%"+g.CarName.String+"%"))
 	}
 
 	if g.DayRate.Valid {
@@ -126,7 +127,7 @@ func (g *GetCarsByParam) GetQuery() []qm.QueryMod {
 	}
 
 	if g.CarName.Valid {
-		res = append(res, qm.Where("car_name=?", g.CarName.String))
+		res = append(res, qm.Where("car_name like ?", "%"+g.CarName.String+"%"))
 	}
 
 	if g.DayRate.Valid {
@@ -184,39 +185,87 @@ func (g *GetCarsByParam) GetQuery() []qm.QueryMod {
 }
 
 type CreateCar struct {
-	CarName   string  `json:"car_name" validate:"required,alphanumspace,min=8,max=50"`
-	DayRate   float64 `json:"day_rate" validate:"required,min=10000,max=1000000"`
-	MonthRate float64 `json:"month_rate" validate:"required,min=250000,max=30000000"`
-	Image     string  `json:"image" validate:"required,uri,min=5,max=256"`
+	CarName   string  `json:"car_name"`
+	DayRate   float64 `json:"day_rate"`
+	MonthRate float64 `json:"month_rate"`
+	Image     string  `json:"image"`
 	CreatedBy int64   `json:"-"`
 }
 
 func (v *CreateCar) Validate() error {
-	if v.CarName == "" {
-		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarName, nil, "invalid car name")
+	if len(v.CarName) < 8 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarNameMin, nil, "invalid car name")
 	}
-
-	if v.DayRate == 0 {
-		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDayRate, nil, "invalid day rate")
+	if len(v.CarName) > 50 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarNameMax, nil, "invalid car name")
 	}
-
-	if v.MonthRate == 0 {
-		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidMonthRate, nil, "invalid month rate")
+	if !regex.IsAlphaNumericSpace(v.CarName) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarNameAlphanum, nil, "invalid car name")
 	}
-
-	if v.Image == "" {
-		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidImage, nil, "invalid image")
+	if v.DayRate < 10000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDayRateMin, nil, "invalid day rate")
 	}
-
+	if v.DayRate > 1000000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDayRateMax, nil, "invalid day rate")
+	}
+	if v.MonthRate < 250000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidMonthRateMin, nil, "invalid month rate")
+	}
+	if v.MonthRate > 30000000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidMonthRateMax, nil, "invalid month rate")
+	}
+	if len(v.Image) < 10 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidImageMin, nil, "invalid image")
+	}
+	if len(v.Image) > 256 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidImageMax, nil, "invalid image")
+	}
+	if !regex.IsURL(v.Image) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidImageIsURL, nil, "invalid image")
+	}
 	return nil
 }
 
 type UpdateCar struct {
-	CarName   null.String  `json:"car_name" swaggertype:"string" validate:"required,alphanumspace,min=8,max=50"`
-	DayRate   null.Float64 `json:"day_rate" swaggertype:"number" validate:"required,min=10000,max=1000000"`
-	MonthRate null.Float64 `json:"month_rate" swaggertype:"number" validate:"required,min=250000,max=30000000"`
-	Image     null.String  `json:"image" swaggertype:"string" validate:"required,uri,min=5,max=256"`
+	CarName   null.String  `json:"car_name" swaggertype:"string"`
+	DayRate   null.Float64 `json:"day_rate" swaggertype:"number"`
+	MonthRate null.Float64 `json:"month_rate" swaggertype:"number"`
+	Image     null.String  `json:"image" swaggertype:"string"`
 	UpdatedBy int64        `json:"-"`
+}
+
+func (v *UpdateCar) Validate() error {
+	if v.CarName.Valid && len(v.CarName.String) < 8 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarNameMin, nil, "invalid car name")
+	}
+	if v.CarName.Valid && len(v.CarName.String) > 50 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarNameMax, nil, "invalid car name")
+	}
+	if v.CarName.Valid && !regex.IsAlphaNumericSpace(v.CarName.String) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarNameAlphanum, nil, "invalid car name")
+	}
+	if v.DayRate.Valid && v.DayRate.Float64 < 10000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDayRateMin, nil, "invalid day rate")
+	}
+	if v.DayRate.Valid && v.DayRate.Float64 > 1000000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDayRateMax, nil, "invalid day rate")
+	}
+	if v.MonthRate.Valid && v.MonthRate.Float64 < 250000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidMonthRateMin, nil, "invalid month rate")
+	}
+	if v.MonthRate.Valid && v.MonthRate.Float64 > 30000000 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidMonthRateMax, nil, "invalid month rate")
+	}
+	if v.Image.Valid && len(v.Image.String) < 5 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidImageMin, nil, "invalid day rate")
+	}
+	if v.Image.Valid && len(v.Image.String) > 256 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidImageMax, nil, "invalid day rate")
+	}
+	if v.Image.Valid && !regex.IsURL(v.Image.String) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidImageIsURL, nil, "invalid day rate")
+	}
+	return nil
 }
 
 func (v *UpdateCar) FillGrpcClient() *grpcmodel.UpdateCarRequest {

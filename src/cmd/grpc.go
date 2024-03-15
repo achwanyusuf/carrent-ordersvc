@@ -7,7 +7,6 @@ import (
 	"net"
 
 	"github.com/achwanyusuf/carrent-lib/pkg/logger"
-	"github.com/achwanyusuf/carrent-ordersvc/script/cred"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 )
@@ -21,7 +20,7 @@ type GRPC struct {
 }
 
 func loadTLSCredentials(serverCert string, serverKey string) (credentials.TransportCredentials, error) {
-	cert, err := tls.LoadX509KeyPair(cred.Path(serverCert), cred.Path(serverKey))
+	cert, err := tls.LoadX509KeyPair(serverCert, serverKey)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +29,7 @@ func loadTLSCredentials(serverCert string, serverKey string) (credentials.Transp
 }
 
 func loadClientTLSCredentials(clientCert string, clientHost string) (credentials.TransportCredentials, error) {
-	creds, err := credentials.NewClientTLSFromFile(cred.Path(clientCert), clientHost)
+	creds, err := credentials.NewClientTLSFromFile(clientCert, clientHost)
 	if err != nil {
 		return nil, err
 	}

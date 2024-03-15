@@ -26,7 +26,7 @@ docker-compose: build
 
 .PHONY: kill-process
 kill-process:
-	@lsof -i :8081 | awk '$$1 ~ /app/ { print $$2 }' | xargs kill -9 || true
+	@lsof -i :8082 | awk '$$1 ~ /app/ { print $$2 }' | xargs kill -9 || true
 
 .PHONY: run
 run: kill-process build

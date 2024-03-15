@@ -23,7 +23,7 @@ type OrderDep struct {
 	DB    *sql.DB
 	Redis *goredislib.Client
 	Conf  Conf
-	Grpc  *grpcclientpool.CPool
+	Grpc  grpcclientpool.CPoolInterface
 }
 
 type Conf struct {
@@ -46,13 +46,13 @@ type OrderInterface interface {
 	UpdateGRPC(ctx context.Context, v *grpcmodel.UpdateOrderRequest) (*grpcmodel.SingleOrderReply, error)
 }
 
-func New(conf Conf, log *logger.Logger, db *sql.DB, rds *goredislib.Client, grpc *grpcclientpool.CPool) OrderInterface {
+func New(conf Conf, log *logger.Logger, db *sql.DB, rds *goredislib.Client, grpc *grpcclientpool.CPoolInterface) OrderInterface {
 	return &OrderDep{
 		Log:   *log,
 		DB:    db,
 		Redis: rds,
 		Conf:  conf,
-		Grpc:  grpc,
+		Grpc:  *grpc,
 	}
 }
 
@@ -140,12 +140,18 @@ func (o *OrderDep) GetByParam(ctx *context.Context, cacheControl string, param *
 					if err != nil {
 						return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error get psql")
 					}
-					err = o.setRedis(ctx, key, string(dataStr))
+					err = o.setRedis(ctx, keyPg, string(dataStr))
 					if err != nil {
 						return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error set redis")
 					}
 				}
 				return res, pg, err
+			}
+			if err1 != nil {
+				return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err1, "error redis")
+			}
+			if err2 != nil {
+				return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err2, "error redis")
 			}
 			return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error marshal param")
 		}

@@ -15,7 +15,7 @@ type DomainDep struct {
 	Log   *logger.Logger
 	DB    *sql.DB
 	Redis *goredislib.Client
-	Grpc  *grpcclientpool.CPool
+	Grpc  *grpcclientpool.CPoolInterface
 }
 
 type Config struct {

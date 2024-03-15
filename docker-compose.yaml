@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   app:
-    container_name: accountsvc
+    container_name: ordersvc
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -13,18 +13,18 @@ services:
       context: .
       dockerfile: ./script/Dockerfile
     ports:
-      - 8081:8081
+      - 8082:8082
     restart: on-failure
     command: bash -c "
       /app/app -migrateup=true &&
-      /app/app -http=true -grpc=true"
+      /app/app -grpc=true"
     depends_on:
       redis:
         condition: service_healthy
       postgresql:
         condition: service_healthy
     networks:
-      - orient_net
+      - carrent
   redis:
     container_name: redis_container
     image: redis:7.2-alpine
@@ -35,7 +35,7 @@ services:
       - redis:/data
     command: redis-server
     networks:
-      - orient_net
+      - carrent
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
   postgresql:
@@ -51,9 +51,9 @@ services:
     volumes: 
       - postgresql:/data
     networks:
-      - orient_net
+      - carrent
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -63,5 +63,5 @@ volumes:
   redis:
     driver: local
 networks:
-  orient_net:
+  carrent:
     driver: bridge

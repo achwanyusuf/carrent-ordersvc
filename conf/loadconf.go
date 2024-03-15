@@ -1,6 +1,8 @@
 package conf
 
 import (
+	"encoding/json"
+
 	"github.com/spf13/viper"
 )
 
@@ -20,6 +22,8 @@ func New(file string) (Config, error) {
 	if err != nil {
 		return cfg, err
 	}
+
+	a, _ := json.Marshal(cfg)
 
 	return cfg, nil
 }

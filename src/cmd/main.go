@@ -8,7 +8,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/achwanyusuf/carrent-lib/pkg/govalidator"
 	"github.com/achwanyusuf/carrent-lib/pkg/grpcclientpool"
 	"github.com/achwanyusuf/carrent-lib/pkg/httpserver"
 	"github.com/achwanyusuf/carrent-lib/pkg/logger"
@@ -105,7 +104,7 @@ func main() {
 		Log:   &log,
 		DB:    psql,
 		Redis: redis,
-		Grpc:  grpcClient,
+		Grpc:  &grpcClient,
 	})
 
 	// init usecase
@@ -156,18 +155,12 @@ func main() {
 			gin := http.NewHTTPServer()
 			http.SetSwaggo(docs.SwaggerInfo)
 
-			validate, err := govalidator.New()
-			if err != nil {
-				panic(err)
-			}
-
 			// init http router
 			restCfg := rest.RestDep{
-				Conf:     cfg.Rest,
-				Log:      &log,
-				Usecase:  uc,
-				Gin:      gin,
-				Validate: validate,
+				Conf:    cfg.Rest,
+				Log:     &log,
+				Usecase: uc,
+				Gin:     gin,
 			}
 			handler := rest.New(&restCfg)
 

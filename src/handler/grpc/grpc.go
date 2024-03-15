@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/achwanyusuf/carrent-lib/pkg/logger"
+	"github.com/achwanyusuf/carrent-ordersvc/src/model"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/grpcmodel"
 	"github.com/achwanyusuf/carrent-ordersvc/src/usecase"
 )
@@ -77,7 +78,7 @@ func (g *GrpcDep) DeleteCar(ctx context.Context, v *grpcmodel.DeleteCarRequest) 
 func (g *GrpcDep) GetCarByID(ctx context.Context, v *grpcmodel.GetCarByIDRequest) (*grpcmodel.SingleCarReply, error) {
 	car, err := g.Usecase.Car.GetByIDGRPCProcess(&ctx, v)
 	if err != nil {
-		return &grpcmodel.SingleCarReply{}, err
+		return &grpcmodel.SingleCarReply{}, model.ErrorHandler(err)
 	}
 
 	return car, nil
@@ -112,7 +113,7 @@ func (g *GrpcDep) DeleteOrder(ctx context.Context, v *grpcmodel.DeleteOrderReque
 func (g *GrpcDep) GetOrderByID(ctx context.Context, v *grpcmodel.GetOrderByIDRequest) (*grpcmodel.SingleOrderReply, error) {
 	order, err := g.Usecase.Order.GetByIDGRPCProcess(&ctx, v)
 	if err != nil {
-		return &grpcmodel.SingleOrderReply{}, err
+		return &grpcmodel.SingleOrderReply{}, model.ErrorHandler(err)
 	}
 
 	return order, nil

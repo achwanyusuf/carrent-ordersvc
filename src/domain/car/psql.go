@@ -3,6 +3,7 @@ package car
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/achwanyusuf/carrent-lib/pkg/errormsg"
 	"github.com/achwanyusuf/carrent-ordersvc/src/model"
@@ -38,7 +39,7 @@ func (c *CarDep) getSingleByParamPSQL(ctx *context.Context, param *model.GetCarB
 	qr := param.GetQuery()
 	car, err := psqlmodel.Cars(qr...).One(*ctx, c.DB)
 	if err == sql.ErrNoRows {
-		return res, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error get cars")
+		return res, errormsg.WrapErr(svcerr.OrderSVCNotFound, err, "error get cars")
 	}
 
 	if err != nil {
@@ -73,17 +74,17 @@ func (c *CarDep) deletePSQL(ctx *context.Context, car *psqlmodel.Car, id int64, 
 	if err != nil {
 		return errormsg.WrapErr(svcerr.OrderSVCPSQLErrorTransaction, err, "error begin transaction")
 	}
-
-	_, err = car.Delete(*ctx, tx, isHardDelete)
-	if err != nil {
-		if errRollback := tx.Rollback(); errRollback != nil {
-			c.Log.Warn(*ctx, errormsg.WrapErr(svcerr.OrderSVCPSQLErrorRollback, err, "error rollback"))
+	if isHardDelete {
+		_, err = car.Delete(*ctx, tx, true)
+		if err != nil {
+			if errRollback := tx.Rollback(); errRollback != nil {
+				c.Log.Warn(*ctx, errormsg.WrapErr(svcerr.OrderSVCPSQLErrorRollback, err, "error rollback"))
+			}
+			return errormsg.WrapErr(svcerr.OrderSVCPSQLErrorUpdate, err, "error delete")
 		}
-		return errormsg.WrapErr(svcerr.OrderSVCPSQLErrorUpdate, err, "error delete")
-	}
-
-	if !isHardDelete {
-		car.DeletedBy = null.NewInt(int(id), true)
+	} else {
+		car.DeletedBy = null.IntFrom(int(id))
+		car.DeletedAt = null.TimeFrom(time.Now())
 		_, err = car.Update(*ctx, tx, boil.Infer())
 		if err != nil {
 			if errRollback := tx.Rollback(); errRollback != nil {
