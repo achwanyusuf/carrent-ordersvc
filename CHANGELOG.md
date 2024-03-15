@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/achwanyusuf/carrent-ordersvc/compare/v1.5.0...v1.6.0) (2024-03-15)
+
+
+### Features
+
+* add schema for migration in same db ([b5896cf](https://github.com/achwanyusuf/carrent-ordersvc/commit/b5896cf857223c928fa4d9d82ce981bef070c339))
+
 ## [1.5.0](https://github.com/achwanyusuf/carrent-ordersvc/compare/v1.4.0...v1.5.0) (2024-03-15)
 
 
