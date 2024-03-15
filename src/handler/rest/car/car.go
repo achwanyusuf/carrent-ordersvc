@@ -12,15 +12,13 @@ import (
 	"github.com/achwanyusuf/carrent-ordersvc/src/model/svcerr"
 	"github.com/achwanyusuf/carrent-ordersvc/src/usecase/car"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/schema"
 )
 
 type CarDep struct {
-	log      logger.Logger
-	car      car.CarInterface
-	conf     Conf
-	validate *validator.Validate
+	log  logger.Logger
+	car  car.CarInterface
+	conf Conf
 }
 
 type Conf struct{}
@@ -33,12 +31,11 @@ type CarInterface interface {
 	DeleteByID(ctx *gin.Context)
 }
 
-func New(conf Conf, log *logger.Logger, c car.CarInterface, validate *validator.Validate) CarInterface {
+func New(conf Conf, log *logger.Logger, c car.CarInterface) CarInterface {
 	return &CarDep{
-		conf:     conf,
-		log:      *log,
-		car:      c,
-		validate: validate,
+		conf: conf,
+		log:  *log,
+		car:  c,
 	}
 }
 
@@ -75,8 +72,8 @@ func (c *CarDep) Create(ctx *gin.Context) {
 	}
 
 	carInput.CreatedBy = ctx.Value("id").(int64)
-	if err = c.validate.Struct(carInput); err != nil {
-		statusCode := response.Transform(ctx, c.log, http.StatusCreated, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error validate struct"))
+	if err = carInput.Validate(); err != nil {
+		statusCode := response.Transform(ctx, c.log, http.StatusCreated, err)
 		ctx.JSON(statusCode, response)
 		return
 	}
@@ -137,8 +134,8 @@ func (c *CarDep) UpdateByID(ctx *gin.Context) {
 	if scope != model.SuperAdminScope {
 		id = ctx.Value("id").(int64)
 	}
-	if err = c.validate.Struct(updateData); err != nil {
-		statusCode := response.Transform(ctx, c.log, http.StatusOK, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error validate struct"))
+	if err = updateData.Validate(); err != nil {
+		statusCode := response.Transform(ctx, c.log, http.StatusOK, err)
 		ctx.JSON(statusCode, response)
 		return
 	}
@@ -191,7 +188,7 @@ func (c *CarDep) Read(ctx *gin.Context) {
 	var decoder = schema.NewDecoder()
 	err := decoder.Decode(&param, ctx.Request.URL.Query())
 	if err != nil {
-		statusCode := response.Transform(ctx, c.log, http.StatusOK, err)
+		statusCode := response.Transform(ctx, c.log, http.StatusOK, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error unmarshal query"))
 		ctx.JSON(statusCode, response)
 		return
 	}

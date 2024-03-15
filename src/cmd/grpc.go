@@ -21,7 +21,8 @@ type GRPC struct {
 }
 
 func loadTLSCredentials(serverCert string, serverKey string) (credentials.TransportCredentials, error) {
-	cert, err := tls.LoadX509KeyPair(cred.Path(serverCert), cred.Path(serverKey))
+	fmt.Println("kena bang", cred.Path(serverCert))
+	cert, err := tls.LoadX509KeyPair(serverCert, serverKey)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +31,8 @@ func loadTLSCredentials(serverCert string, serverKey string) (credentials.Transp
 }
 
 func loadClientTLSCredentials(clientCert string, clientHost string) (credentials.TransportCredentials, error) {
-	creds, err := credentials.NewClientTLSFromFile(cred.Path(clientCert), clientHost)
+	fmt.Println("kena bang", cred.Path(clientCert))
+	creds, err := credentials.NewClientTLSFromFile(clientCert, clientHost)
 	if err != nil {
 		return nil, err
 	}

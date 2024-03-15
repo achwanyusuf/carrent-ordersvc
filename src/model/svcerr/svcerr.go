@@ -16,18 +16,26 @@ const (
 	CodePSQLErrorDelete
 	CodePSQLErrorGet
 	CodeErrorGRPCClient
-	CodeInvalidCarName
-	CodeInvalidDayRate
-	CodeInvalidMonthRate
-	CodeInvalidImage
+	CodeInvalidCarNameMin
+	CodeInvalidCarNameMax
+	CodeInvalidCarNameAlphanum
+	CodeInvalidDayRateMin
+	CodeInvalidDayRateMax
+	CodeInvalidMonthRateMin
+	CodeInvalidMonthRateMax
+	CodeInvalidImageMin
+	CodeInvalidImageMax
+	CodeInvalidImageIsURL
 	CodeInvalidCarID
 	CodeInvalidOrderDate
 	CodeInvalidPickupDate
 	CodeInvalidDropoffDate
-	CodeInvalidPickupLocation
+	CodeInvalidPickupLocationMin
+	CodeInvalidPickupLocationMax
 	CodeInvalidPickupLat
 	CodeInvalidPickupLong
-	CodeInvalidDropoffLocation
+	CodeInvalidDropoffLocationMin
+	CodeInvalidDropoffLocationMax
 	CodeInvalidDropoffLat
 	CodeInvalidDropoffLong
 
@@ -48,20 +56,28 @@ var (
 	OrderSVCBadRequest           = ErrMsg[CodeBadRequest]
 	OrderSVCErrorGRPCClient      = ErrMsg[CodeErrorGRPCClient]
 
-	OrderSVCCodeInvalidCarName         = ErrMsg[CodeInvalidCarName]
-	OrderSVCCodeInvalidDayRate         = ErrMsg[CodeInvalidDayRate]
-	OrderSVCCodeInvalidMonthRate       = ErrMsg[CodeInvalidMonthRate]
-	OrderSVCCodeInvalidImage           = ErrMsg[CodeInvalidImage]
-	OrderSVCCodeInvalidCarID           = ErrMsg[CodeInvalidCarID]
-	OrderSVCCodeInvalidOrderDate       = ErrMsg[CodeInvalidOrderDate]
-	OrderSVCCodeInvalidPickupDate      = ErrMsg[CodeInvalidPickupDate]
-	OrderSVCCodeInvalidDropoffDate     = ErrMsg[CodeInvalidDropoffDate]
-	OrderSVCCodeInvalidPickupLocation  = ErrMsg[CodeInvalidPickupLocation]
-	OrderSVCCodeInvalidPickupLat       = ErrMsg[CodeInvalidPickupLat]
-	OrderSVCCodeInvalidPickupLong      = ErrMsg[CodeInvalidPickupLong]
-	OrderSVCCodeInvalidDropoffLocation = ErrMsg[CodeInvalidDropoffLocation]
-	OrderSVCCodeInvalidDropoffLat      = ErrMsg[CodeInvalidDropoffLat]
-	OrderSVCCodeInvalidDropoffLong     = ErrMsg[CodeInvalidDropoffLong]
+	OrderSVCCodeInvalidCarNameMin         = ErrMsg[CodeInvalidCarNameMin]
+	OrderSVCCodeInvalidCarNameMax         = ErrMsg[CodeInvalidCarNameMax]
+	OrderSVCCodeInvalidCarNameAlphanum    = ErrMsg[CodeInvalidCarNameAlphanum]
+	OrderSVCCodeInvalidDayRateMin         = ErrMsg[CodeInvalidDayRateMin]
+	OrderSVCCodeInvalidDayRateMax         = ErrMsg[CodeInvalidDayRateMax]
+	OrderSVCCodeInvalidMonthRateMin       = ErrMsg[CodeInvalidMonthRateMin]
+	OrderSVCCodeInvalidMonthRateMax       = ErrMsg[CodeInvalidMonthRateMax]
+	OrderSVCCodeInvalidImageMin           = ErrMsg[CodeInvalidImageMin]
+	OrderSVCCodeInvalidImageMax           = ErrMsg[CodeInvalidImageMax]
+	OrderSVCCodeInvalidImageIsURL         = ErrMsg[CodeInvalidImageIsURL]
+	OrderSVCCodeInvalidCarID              = ErrMsg[CodeInvalidCarID]
+	OrderSVCCodeInvalidOrderDate          = ErrMsg[CodeInvalidOrderDate]
+	OrderSVCCodeInvalidPickupDate         = ErrMsg[CodeInvalidPickupDate]
+	OrderSVCCodeInvalidDropoffDate        = ErrMsg[CodeInvalidDropoffDate]
+	OrderSVCCodeInvalidPickupLocationMin  = ErrMsg[CodeInvalidPickupLocationMin]
+	OrderSVCCodeInvalidPickupLocationMax  = ErrMsg[CodeInvalidPickupLocationMax]
+	OrderSVCCodeInvalidPickupLat          = ErrMsg[CodeInvalidPickupLat]
+	OrderSVCCodeInvalidPickupLong         = ErrMsg[CodeInvalidPickupLong]
+	OrderSVCCodeInvalidDropoffLocationMin = ErrMsg[CodeInvalidDropoffLocationMin]
+	OrderSVCCodeInvalidDropoffLocationMax = ErrMsg[CodeInvalidDropoffLocationMax]
+	OrderSVCCodeInvalidDropoffLat         = ErrMsg[CodeInvalidDropoffLat]
+	OrderSVCCodeInvalidDropoffLong        = ErrMsg[CodeInvalidDropoffLong]
 )
 
 var ErrMsg = map[int]errormsg.Message{
@@ -153,36 +169,84 @@ var ErrMsg = map[int]errormsg.Message{
 			EN: "There was an error in data delivering",
 		},
 	},
-	CodeInvalidCarName: {
-		Code:       CodeInvalidCarName,
+	CodeInvalidCarNameMin: {
+		Code:       CodeInvalidCarNameMin,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom nama mobil harus diisi!",
+		Message:    "Kolom nama mobil minimum 8 karakter!",
 		Translation: errormsg.Translation{
-			EN: "Car's name field should not be empty!",
+			EN: "Car's name field minimum 8 character!",
 		},
 	},
-	CodeInvalidDayRate: {
-		Code:       CodeInvalidDayRate,
+	CodeInvalidCarNameMax: {
+		Code:       CodeInvalidCarNameMax,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom biaya harian harus diisi!",
+		Message:    "Kolom nama mobil maksimum 50 karakter!",
 		Translation: errormsg.Translation{
-			EN: "Day rate field should not be empty!",
+			EN: "Car's name field maximum 50 character!",
 		},
 	},
-	CodeInvalidMonthRate: {
-		Code:       CodeInvalidMonthRate,
+	CodeInvalidCarNameAlphanum: {
+		Code:       CodeInvalidCarNameAlphanum,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom biaya bulanan harus diisi!",
+		Message:    "Kolom nama mobil hanya boleh huruf dan angka!",
 		Translation: errormsg.Translation{
-			EN: "Month rate field should not be empty!",
+			EN: "Car's name field should be character or number!",
 		},
 	},
-	CodeInvalidImage: {
-		Code:       CodeInvalidImage,
+	CodeInvalidDayRateMin: {
+		Code:       CodeInvalidDayRateMin,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom gambar harus diisi!",
+		Message:    "Kolom biaya harian minimal 10000!",
 		Translation: errormsg.Translation{
-			EN: "Image field should not be empty!",
+			EN: "Day rate's field minimum 10000!",
+		},
+	},
+	CodeInvalidDayRateMax: {
+		Code:       CodeInvalidDayRateMax,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom biaya harian minimal 1000000!",
+		Translation: errormsg.Translation{
+			EN: "Day rate's field maximum 1000000!",
+		},
+	},
+	CodeInvalidMonthRateMin: {
+		Code:       CodeInvalidMonthRateMin,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom biaya bulanan minimal 250000!",
+		Translation: errormsg.Translation{
+			EN: "Month rate's field maximum 250000!",
+		},
+	},
+	CodeInvalidMonthRateMax: {
+		Code:       CodeInvalidMonthRateMax,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom biaya bulanan maksimal 30000000!",
+		Translation: errormsg.Translation{
+			EN: "Month rate's field maximum 30000000!",
+		},
+	},
+	CodeInvalidImageMin: {
+		Code:       CodeInvalidImageMin,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom gambar minimum 10 karakter!",
+		Translation: errormsg.Translation{
+			EN: "Image field minimum 10 character!",
+		},
+	},
+	CodeInvalidImageMax: {
+		Code:       CodeInvalidImageMax,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom gambar maksimum 255 karakter!",
+		Translation: errormsg.Translation{
+			EN: "Image field maximum 255 character!",
+		},
+	},
+	CodeInvalidImageIsURL: {
+		Code:       CodeInvalidImageIsURL,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom gambar harus berupa url!",
+		Translation: errormsg.Translation{
+			EN: "Image field should be url!",
 		},
 	},
 	CodeInvalidCarID: {
@@ -217,52 +281,68 @@ var ErrMsg = map[int]errormsg.Message{
 			EN: "Dropoff date field should not be empty!",
 		},
 	},
-	CodeInvalidPickupLocation: {
-		Code:       CodeInvalidPickupLocation,
+	CodeInvalidPickupLocationMin: {
+		Code:       CodeInvalidPickupLocationMin,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom lokasi penjemputan harus diisi!",
+		Message:    "Kolom lokasi penjemputan minimal 5 karakter!",
 		Translation: errormsg.Translation{
-			EN: "Pickup location field should not be empty!",
+			EN: "Pickup location field minimum 5 character!",
+		},
+	},
+	CodeInvalidPickupLocationMax: {
+		Code:       CodeInvalidPickupLocationMax,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom lokasi penjemputan maksimal 50 karakter!",
+		Translation: errormsg.Translation{
+			EN: "Pickup location field maximum 50 character",
 		},
 	},
 	CodeInvalidPickupLat: {
 		Code:       CodeInvalidPickupLat,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom garis lintang penjemputan harus diisi!",
+		Message:    "Kolom garis lintang penjemputan harus dalam jangkauan -90 sampai 90!",
 		Translation: errormsg.Translation{
-			EN: "Pickup latitude field should not be empty!",
+			EN: "Pickup latitude field should in range -90 to 90!",
 		},
 	},
 	CodeInvalidPickupLong: {
 		Code:       CodeInvalidPickupLong,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom garis bujur penjemputan harus diisi!",
+		Message:    "Kolom garis bujur penjemputan harus dalam jangkauan -180 sampai 180!",
 		Translation: errormsg.Translation{
-			EN: "Pickup longitude field should not be empty!",
+			EN: "Pickup longitude field should in range -180 to 180!",
 		},
 	},
-	CodeInvalidDropoffLocation: {
-		Code:       CodeInvalidDropoffLocation,
+	CodeInvalidDropoffLocationMin: {
+		Code:       CodeInvalidDropoffLocationMin,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom lokasi pengantaran harus diisi!",
+		Message:    "Kolom lokasi pengantaran minimal 5 karakter!",
 		Translation: errormsg.Translation{
-			EN: "Dropoff location should not be empty!",
+			EN: "Dropoff location minimum 5 character!",
+		},
+	},
+	CodeInvalidDropoffLocationMax: {
+		Code:       CodeInvalidDropoffLocationMax,
+		StatusCode: http.StatusBadRequest,
+		Message:    "Kolom lokasi pengantaran maksimal 50 karakter!",
+		Translation: errormsg.Translation{
+			EN: "Dropoff location maximum 50 character!",
 		},
 	},
 	CodeInvalidDropoffLat: {
 		Code:       CodeInvalidDropoffLat,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom garis lintang pengantaran harus diisi!",
+		Message:    "Kolom garis lintang dalam jangkauan -90 sampai 90!",
 		Translation: errormsg.Translation{
-			EN: "Dropoff latitude field should not be empty!",
+			EN: "Dropoff latitude field should in range -90 to 90!",
 		},
 	},
 	CodeInvalidDropoffLong: {
 		Code:       CodeInvalidDropoffLong,
 		StatusCode: http.StatusBadRequest,
-		Message:    "Kolom garis bujur pengantaran harus diisi!",
+		Message:    "Kolom garis bujur pengantaran dalam jangkauan -180 sampai 180!",
 		Translation: errormsg.Translation{
-			EN: "Dropoff longitude field should not be empty!",
+			EN: "Dropoff longitude field should in range -180 to 180!",
 		},
 	},
 }

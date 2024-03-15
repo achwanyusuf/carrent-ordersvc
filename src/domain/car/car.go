@@ -23,7 +23,7 @@ type CarDep struct {
 	DB    *sql.DB
 	Redis *goredislib.Client
 	Conf  Conf
-	Grpc  *grpcclientpool.CPool
+	Grpc  grpcclientpool.CPoolInterface
 }
 
 type Conf struct {
@@ -46,13 +46,13 @@ type CarInterface interface {
 	UpdateGRPC(ctx context.Context, v *grpcmodel.UpdateCarRequest) (*grpcmodel.SingleCarReply, error)
 }
 
-func New(conf Conf, log *logger.Logger, db *sql.DB, rds *goredislib.Client, grpc *grpcclientpool.CPool) CarInterface {
+func New(conf Conf, log *logger.Logger, db *sql.DB, rds *goredislib.Client, grpc *grpcclientpool.CPoolInterface) CarInterface {
 	return &CarDep{
 		Log:   *log,
 		DB:    db,
 		Redis: rds,
 		Conf:  conf,
-		Grpc:  grpc,
+		Grpc:  *grpc,
 	}
 }
 
@@ -140,14 +140,19 @@ func (c *CarDep) GetByParam(ctx *context.Context, cacheControl string, param *mo
 					if err != nil {
 						return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error get psql")
 					}
-					err = c.setRedis(ctx, key, string(dataStr))
+					err = c.setRedis(ctx, keyPg, string(dataStr))
 					if err != nil {
 						return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error set redis")
 					}
 				}
 				return res, pg, err
 			}
-			return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error marshal param")
+			if err1 != nil {
+				return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err1, "error redis")
+			}
+			if err2 != nil {
+				return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err2, "error redis")
+			}
 		}
 		return res, pg, nil
 	}
@@ -166,7 +171,7 @@ func (c *CarDep) GetByParam(ctx *context.Context, cacheControl string, param *mo
 		if err != nil {
 			return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error get psql")
 		}
-		err = c.setRedis(ctx, key, string(dataStr))
+		err = c.setRedis(ctx, keyPg, string(dataStr))
 		if err != nil {
 			return res, pg, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error set redis")
 		}

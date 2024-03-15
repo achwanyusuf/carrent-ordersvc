@@ -38,7 +38,7 @@ func (o *OrderDep) getSingleByParamPSQL(ctx *context.Context, param *model.GetOr
 	qr := param.GetQuery()
 	order, err := psqlmodel.Orders(qr...).One(*ctx, o.DB)
 	if err == sql.ErrNoRows {
-		return res, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "error get orders")
+		return res, errormsg.WrapErr(svcerr.OrderSVCNotFound, err, "error get orders")
 	}
 
 	if err != nil {

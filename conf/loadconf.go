@@ -1,6 +1,9 @@
 package conf
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/spf13/viper"
 )
 
@@ -20,6 +23,9 @@ func New(file string) (Config, error) {
 	if err != nil {
 		return cfg, err
 	}
+
+	a, _ := json.Marshal(cfg)
+	fmt.Println(string(a), "ini bang")
 
 	return cfg, nil
 }

@@ -144,7 +144,7 @@ func (c *OrderDep) GetByID(ctx *gin.Context, cacheControl string, id int64) (mod
 		CacheControl: cacheControl,
 	})
 	if err != nil {
-		return model.Order{}, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "data not found")
+		return model.Order{}, err
 	}
 	return model.TransformSingleOrderReplyToOrder(ctx, order, c.log), nil
 }
@@ -154,7 +154,7 @@ func (c *OrderDep) GetByIDGRPCProcess(ctx *context.Context, v *grpcmodel.GetOrde
 		ID: null.Int64From(v.Id),
 	})
 	if err != nil {
-		return &grpcmodel.SingleOrderReply{}, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "data not found")
+		return &grpcmodel.SingleOrderReply{}, err
 	}
 	return model.TransformSingleOrderReply(&order), nil
 }

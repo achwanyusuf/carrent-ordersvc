@@ -109,7 +109,7 @@ func (c *CarDep) GetByID(ctx *gin.Context, cacheControl string, id int64) (model
 		CacheControl: cacheControl,
 	})
 	if err != nil {
-		return model.Car{}, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "data not found")
+		return model.Car{}, err
 	}
 	return model.TransformSingleCarReplyToCar(ctx, car, c.log), nil
 }
@@ -119,7 +119,7 @@ func (c *CarDep) GetByIDGRPCProcess(ctx *context.Context, v *grpcmodel.GetCarByI
 		ID: null.Int64From(v.Id),
 	})
 	if err != nil {
-		return &grpcmodel.SingleCarReply{}, errormsg.WrapErr(svcerr.OrderSVCBadRequest, err, "data not found")
+		return &grpcmodel.SingleCarReply{}, err
 	}
 	return model.TransformSingleCarReply(&car), nil
 }

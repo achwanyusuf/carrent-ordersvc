@@ -22,16 +22,16 @@ var (
 
 type GetOrderByParam struct {
 	ID              null.Int64   `schema:"id" json:"id"`
-	CarID           null.Int64   `json:"car_id"`
-	OrderDate       null.Time    `json:"order_date"`
-	PickupDate      null.Time    `json:"pickup_date"`
-	DropoffDate     null.Time    `json:"dropoff_date"`
-	PickupLocation  null.String  `json:"pickup_location"`
-	PickupLat       null.Float64 `json:"pickup_lat"`
-	PickupLong      null.Float64 `json:"pickup_long"`
-	DropoffLocation null.String  `json:"dropoff_location"`
-	DropoffLat      null.Float64 `json:"dropoff_lat"`
-	DropoffLong     null.Float64 `json:"dropoff_long"`
+	CarID           null.Int64   `schema:"car_id" json:"car_id"`
+	OrderDate       null.Time    `schema:"order_date" json:"order_date"`
+	PickupDate      null.Time    `schema:"pickup_date" json:"pickup_date"`
+	DropoffDate     null.Time    `schema:"dropoff_date" json:"dropoff_date"`
+	PickupLocation  null.String  `schema:"pickup_location" json:"pickup_location"`
+	PickupLat       null.Float64 `schema:"pickup_lat" json:"pickup_lat"`
+	PickupLong      null.Float64 `schema:"pickup_long" json:"pickup_long"`
+	DropoffLocation null.String  `schema:"dropoff_location" json:"dropoff_location"`
+	DropoffLat      null.Float64 `schema:"dropoff_lat" json:"dropoff_lat"`
+	DropoffLong     null.Float64 `schema:"dropoff_long" json:"dropoff_long"`
 }
 
 func (g *GetOrderByParam) GetQuery() []qm.QueryMod {
@@ -146,7 +146,7 @@ func (g *GetOrdersByParam) GetQuery() []qm.QueryMod {
 	}
 
 	if g.PickupLocation.Valid {
-		res = append(res, qm.Where("pickup_location=?", g.PickupLocation.String))
+		res = append(res, qm.Where("pickup_location like ?", "%"+g.PickupLocation.String+"%"))
 	}
 
 	if g.PickupLat.Valid {
@@ -158,7 +158,7 @@ func (g *GetOrdersByParam) GetQuery() []qm.QueryMod {
 	}
 
 	if g.DropoffLocation.Valid {
-		res = append(res, qm.Where("dropoff_location=?", g.DropoffLocation.String))
+		res = append(res, qm.Where("dropoff_location like ?", "%"+g.DropoffLocation.String+"%"))
 	}
 
 	if g.DropoffLat.Valid {
@@ -180,16 +180,16 @@ func (g *GetOrdersByParam) GetQuery() []qm.QueryMod {
 }
 
 type CreateOrder struct {
-	CarID           int64     `json:"car_id" validate:"required,min=1"`
-	OrderDate       time.Time `json:"order_date" example:"2024-02-02T00:00:00Z" validate:"required"`
-	PickupDate      time.Time `json:"pickup_date" example:"2024-02-02T00:00:00Z" validate:"required"`
-	DropoffDate     time.Time `json:"dropoff_date" validate:"required"`
-	PickupLocation  string    `json:"pickup_location" validate:"required,min=30,max=50"`
-	PickupLat       float64   `json:"pickup_lat" validate:"required,min=-90,max=90"`
-	PickupLong      float64   `json:"pickup_long" validate:"required,min=-180,max=180"`
-	DropoffLocation string    `json:"dropoff_location" validate:"required,min=30,max=50"`
-	DropoffLat      float64   `json:"dropoff_lat" validate:"required,min=-90,max=90"`
-	DropoffLong     float64   `json:"dropoff_long" validate:"required,min=-180,max=180"`
+	CarID           int64     `json:"car_id"`
+	OrderDate       time.Time `json:"order_date" example:"2024-02-02T00:00:00Z"`
+	PickupDate      time.Time `json:"pickup_date" example:"2024-02-02T00:00:00Z"`
+	DropoffDate     time.Time `json:"dropoff_date"`
+	PickupLocation  string    `json:"pickup_location"`
+	PickupLat       float64   `json:"pickup_lat"`
+	PickupLong      float64   `json:"pickup_long"`
+	DropoffLocation string    `json:"dropoff_location"`
+	DropoffLat      float64   `json:"dropoff_lat"`
+	DropoffLong     float64   `json:"dropoff_long"`
 	CreatedBy       int64     `json:"-"`
 }
 
@@ -210,27 +210,35 @@ func (v *CreateOrder) Validate() error {
 		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffDate, nil, "invalid dropoff date")
 	}
 
-	if v.PickupLocation == "" {
-		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLocation, nil, "invalid pickup location")
+	if len(v.PickupLocation) < 5 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLocationMin, nil, "invalid pickup location")
 	}
 
-	if v.PickupLat == 0 {
+	if len(v.PickupLocation) > 50 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLocationMax, nil, "invalid pickup location")
+	}
+
+	if v.PickupLat < -90 || v.PickupLat > 90 {
 		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLat, nil, "invalid pickup lat")
 	}
 
-	if v.PickupLong == 0 {
+	if v.PickupLong < -180 || v.PickupLong > 180 {
 		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLong, nil, "invalid pickup long")
 	}
 
-	if v.DropoffLocation == "" {
-		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLocation, nil, "invalid dropoff location")
+	if len(v.DropoffLocation) < 5 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLocationMin, nil, "invalid dropoff location")
 	}
 
-	if v.DropoffLat == 0 {
+	if len(v.DropoffLocation) > 50 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLocationMax, nil, "invalid dropoff location")
+	}
+
+	if v.DropoffLat < -90 || v.DropoffLat > 90 {
 		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLat, nil, "invalid dropoff lat")
 	}
 
-	if v.DropoffLong == 0 {
+	if v.DropoffLong < -180 || v.DropoffLong > 180 {
 		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLong, nil, "invalid dropoff long")
 	}
 
@@ -238,17 +246,69 @@ func (v *CreateOrder) Validate() error {
 }
 
 type UpdateOrder struct {
-	CarID           null.Int64   `json:"car_id" swaggertype:"number" validate:"required,min=1"`
-	OrderDate       null.Time    `json:"order_date" swaggertype:"string" example:"2024-02-02T00:00:00Z" validate:"required"`
-	PickupDate      null.Time    `json:"pickup_date" swaggertype:"string" example:"2024-02-02T00:00:00Z" validate:"required"`
-	DropoffDate     null.Time    `json:"dropoff_date" swaggertype:"string" example:"2024-02-02T00:00:00Z" validate:"required"`
-	PickupLocation  null.String  `json:"pickup_location" swaggertype:"string" validate:"required,min=30,max=50"`
-	PickupLat       null.Float64 `json:"pickup_lat" swaggertype:"number" validate:"required,min=-90,max=90"`
-	PickupLong      null.Float64 `json:"pickup_long" swaggertype:"number" validate:"required,min=-180,max=180"`
-	DropoffLocation null.String  `json:"dropoff_location" swaggertype:"string" validate:"required,min=30,max=50"`
-	DropoffLat      null.Float64 `json:"dropoff_lat" swaggertype:"number" validate:"required,min=-90,max=90"`
-	DropoffLong     null.Float64 `json:"dropoff_long" swaggertype:"number" validate:"required,min=-180,max=180"`
+	CarID           null.Int64   `json:"car_id" swaggertype:"number"`
+	OrderDate       null.Time    `json:"order_date" swaggertype:"string" example:"2024-02-02T00:00:00Z"`
+	PickupDate      null.Time    `json:"pickup_date" swaggertype:"string" example:"2024-02-02T00:00:00Z"`
+	DropoffDate     null.Time    `json:"dropoff_date" swaggertype:"string" example:"2024-02-02T00:00:00Z"`
+	PickupLocation  null.String  `json:"pickup_location" swaggertype:"string"`
+	PickupLat       null.Float64 `json:"pickup_lat" swaggertype:"number"`
+	PickupLong      null.Float64 `json:"pickup_long" swaggertype:"number"`
+	DropoffLocation null.String  `json:"dropoff_location" swaggertype:"string"`
+	DropoffLat      null.Float64 `json:"dropoff_lat" swaggertype:"number"`
+	DropoffLong     null.Float64 `json:"dropoff_long" swaggertype:"number"`
 	UpdatedBy       int64        `json:"-"`
+}
+
+func (v *UpdateOrder) Validate() error {
+	if v.CarID.Valid && v.CarID.Int64 == 0 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidCarID, nil, "invalid car id")
+	}
+
+	if v.OrderDate.Valid && v.OrderDate.Time.IsZero() {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidOrderDate, nil, "invalid order date")
+	}
+
+	if v.PickupDate.Valid && v.PickupDate.Time.IsZero() {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupDate, nil, "invalid pickup date")
+	}
+
+	if v.DropoffDate.Valid && v.DropoffDate.Time.IsZero() {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffDate, nil, "invalid dropoff date")
+	}
+
+	if v.PickupLocation.Valid && len(v.PickupLocation.String) < 5 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLocationMin, nil, "invalid pickup location")
+	}
+
+	if v.PickupLocation.Valid && len(v.PickupLocation.String) > 50 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLocationMax, nil, "invalid pickup location")
+	}
+
+	if v.PickupLat.Valid && (v.PickupLat.Float64 < -90 || v.PickupLat.Float64 > 90) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLat, nil, "invalid pickup lat")
+	}
+
+	if v.PickupLong.Valid && (v.PickupLong.Float64 < -180 || v.PickupLong.Float64 > 180) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidPickupLong, nil, "invalid pickup long")
+	}
+
+	if v.DropoffLocation.Valid && len(v.DropoffLocation.String) < 5 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLocationMin, nil, "invalid dropoff location")
+	}
+
+	if v.DropoffLocation.Valid && len(v.DropoffLocation.String) > 50 {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLocationMax, nil, "invalid dropoff location")
+	}
+
+	if v.DropoffLat.Valid && (v.DropoffLat.Float64 < -90 || v.DropoffLat.Float64 > 90) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLat, nil, "invalid dropoff lat")
+	}
+
+	if v.DropoffLong.Valid && (v.DropoffLong.Float64 < -180 || v.DropoffLong.Float64 > 180) {
+		return errormsg.WrapErr(svcerr.OrderSVCCodeInvalidDropoffLong, nil, "invalid dropoff long")
+	}
+
+	return nil
 }
 
 func (v *UpdateOrder) FillGrpcClient() *grpcmodel.UpdateOrderRequest {
